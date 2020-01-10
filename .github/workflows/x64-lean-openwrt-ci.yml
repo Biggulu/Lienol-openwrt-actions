@@ -8,8 +8,8 @@
 name: X64-Lean-OpenWrt-CI
 
 on:
-  schedule:
-    - cron: 0 22 * * *
+#  schedule:
+#    - cron: 0 22 * * *
 #  push:
 #    branches: 
 #      - master
@@ -33,17 +33,31 @@ jobs:
         REPO_URL: https://github.com/Lienol/lean-lede
         REPO_BRANCH: dev
       run: git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
-    - name: Update feeds
-      run: cd openwrt && ./scripts/feeds update -a
-
-    - name: Install feeds
-      run: cd openwrt && ./scripts/feeds install -a
-    
-    - name: Costom configure file
+    - name: Update & Install feeds
+      working-directory: ./openwrt
       run: |
-          cd openwrt
-          rm -f .config
-          cp ../lean-lede-x64 .config
+        ./scripts/feeds update -a
+        ./scripts/feeds install -a
+
+    - name: 添加主题
+      working-directory: ./openwrt/package
+      run: |
+        git clone https://github.com/Kinodi/luci-theme-atmaterial.git openwrt-packages/luci-theme-atmaterial
+        git clone https://github.com/rosywrt/luci-theme-rosy.git openwrt-packages/luci-theme-rosy
+            
+#    - name: Costom configure file
+#      run: |
+#          cd openwrt
+#          rm -f .config
+#          cp ../lean-lede-x64 .config
+
+    - name: Configuration Customization - Build_x86_64
+      env:
+        CONFIG_FILE: 'lean-lede-x64.config'
+      run: |
+        [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
+        chmod +x ./customize.sh && ./customize.sh
+        cd openwrt && make defconfig
 
     - name: Make download
       run: |
