@@ -10,8 +10,10 @@ name: X64-My-OpenWrt-CI
 on:
   release:
     types: [published]
+    
 #  schedule:
 #    - cron: 0 22 * * *
+
 #  push:
 #    branches: 
 #      - master
