@@ -89,5 +89,5 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-artifact@master
       with:
-        name: OpenWrt Ever
-        path: openwrt/bin
+        name: OpenWrt firmware
+        path: ./artifact/
