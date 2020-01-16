@@ -37,18 +37,26 @@ jobs:
         REPO_URL: https://github.com/Lienol/openwrt
         REPO_BRANCH: my-19.07-full
       run: git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
-    - name: Update feeds
-      run: cd openwrt && ./scripts/feeds update -a
-
-    - name: Install feeds
-      run: cd openwrt && ./scripts/feeds install -a
-    
-    - name: Costom configure file
+    - name: Update & Install feeds
+      working-directory: ./openwrt
       run: |
-          cd openwrt
-          rm -f .config
-          cp ../my-1907-x64 .config
+        ./scripts/feeds update -a
+        ./scripts/feeds install -a
 
+    - name: 添加主题
+      working-directory: ./openwrt/package
+      run: |
+        git clone https://github.com/Kinodi/luci-theme-atmaterial.git openwrt-packages/luci-theme-atmaterial
+        git clone https://github.com/rosywrt/luci-theme-rosy.git openwrt-packages/luci-theme-rosy        
+    
+    - name: Configuration Customization - Build_x86_64
+      env:
+        CONFIG_FILE: 'Lienol-openwrt.config'
+      run: |
+        [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
+        chmod +x ./customize.sh && ./customize.sh
+        cd openwrt && make defconfig
+    
     - name: Make download
       run: |
           cd openwrt
