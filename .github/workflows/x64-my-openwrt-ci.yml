@@ -51,7 +51,7 @@ jobs:
     
     - name: Configuration Customization - Build_x86_64
       env:
-        CONFIG_FILE: 'Lienol-openwrt.config'
+        CONFIG_FILE: 'lienol-openwrt.config'
       run: |
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
         chmod +x ./customize.sh && ./customize.sh
